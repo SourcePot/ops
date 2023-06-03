@@ -70,11 +70,7 @@ class OpsEntries implements SourcePot\Datapool\Interfaces\Processor{
 				}
 				break;
 			case 'info':
-				if (empty($callingElement)){
-					return TRUE;
-				} else {
-					return $this->getOpsEntriesInfo($callingElement);
-				}
+				return $this->getOpsEntriesInfo();
 				break;
 		}
 		return FALSE;
@@ -117,6 +113,13 @@ class OpsEntries implements SourcePot\Datapool\Interfaces\Processor{
 		if ($this->oc['SourcePot\Datapool\Foundation\Access']->isContentAdmin()){
 			$html.=$this->oc['SourcePot\Datapool\Foundation\Container']->container('Mapping entries settings','generic',$callingElement,array('method'=>'getOpsEntriesSettingsHtml','classWithNamespace'=>__CLASS__),array());
 		}
+		return $html;
+	}
+	
+	private function getOpsEntriesInfo(){
+		$html='';
+		$html.=__CLASS__.'::'.__FUNCTION__.' provides access to the Open Patent Service of the European Patent Office.';
+		$html.='You need to have an OPS account in order to use the service.';
 		return $html;
 	}
 	
