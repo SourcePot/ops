@@ -1,2 +1,2 @@
-# ops
-Open Patent Service add-on
+# Open Patent Service add-on for Datapool
+
