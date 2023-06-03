@@ -17,7 +17,7 @@
 	},
 	"autoload":{
 		"psr-4": {
-			"sourcepot\\ops\\":"src/"
+			"SourcePot\\Ops\\":"src/"
 		}
 	}
 }
