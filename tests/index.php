@@ -13,11 +13,15 @@ namespace SourcePot\Ops;
 	
 mb_internal_encoding("UTF-8");
 
-$rootClass='../src/php/Root.php';
+$rootClass='../../../../src/php/Root.php';
 if (is_file($rootClass)){
 	require_once $rootClass;
-	$pageObj=new \SourcePot\Datapool\Root();
-	echo 'Datapool Object Collection created.<br/>';
+	$pageObj=new \SourcePot\Datapool\Root('../../../../src/www/');
+	$oc=$pageObj->getOc();
+	$html='Datapool Object Collection created.<br/>';
+	$html.='The file system for testing was created in '.realpath('../').'<br/>';
+	var_dump($oc['SourcePot\Datapool\Foundation\Backbone']->getSettings());
+	echo $html;
 } else {
 	echo 'Failed to load '.$rootClass.'<br/>';
 }
