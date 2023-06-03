@@ -19,7 +19,7 @@
 			"SourcePot\\Ops\\":"src/"
 		}
 	},
-	"require-dev": {
+	"require-dev":{
     	"sourcepot/datapool":">=v0.4.1"
 	}
     

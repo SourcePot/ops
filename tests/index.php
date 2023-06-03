@@ -16,7 +16,7 @@ mb_internal_encoding("UTF-8");
 $autoloadFile='../vendor/autoload.php';
 if (is_file($autoloadFile)){
 	require_once $autoloadFile;
-	$pageObj=new Root();
+	$pageObj=new \SourcePot\Datapool\Root();
 } else {
 	echo 'Failed to load '.$autoloadFile.'<br/>';
 }
