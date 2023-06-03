@@ -1,0 +1,23 @@
+{
+	"name":"sourcepot/ops",
+	"type":"library",
+	"description":"Open Patent Service for Datapool",
+	"keywords":["OPS"],
+	"homepage":"https://datapool.info",
+	"license":"AGPL-3.0-or-later",
+	"authors":[
+		{
+			"name":"Carsten Wallenhauer",
+			"email":"admin@datapool.info"
+		}
+	],
+	"require":{
+		"php":">=8.0",
+		"sourcepot/datapool":">=v0.4.1"
+	},
+	"autoload":{
+		"psr-4": {
+			"sourcepot\\ops\\":"src"
+		}
+	}
+}
