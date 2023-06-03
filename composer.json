@@ -18,9 +18,5 @@
 		"psr-4": {
 			"SourcePot\\Ops\\":"src/"
 		}
-	},
-	"require-dev":{
-    	"sourcepot/datapool":">=v0.4.1"
 	}
-    
 }

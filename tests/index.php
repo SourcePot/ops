@@ -13,12 +13,13 @@ namespace SourcePot\Ops;
 	
 mb_internal_encoding("UTF-8");
 
-$autoloadFile='../vendor/autoload.php';
-if (is_file($autoloadFile)){
-	require_once $autoloadFile;
+$rootClass='../src/php/Root.php';
+if (is_file($rootClass)){
+	require_once $rootClass;
 	$pageObj=new \SourcePot\Datapool\Root();
+	echo 'Datapool Object Collection created.<br/>';
 } else {
-	echo 'Failed to load '.$autoloadFile.'<br/>';
+	echo 'Failed to load '.$rootClass.'<br/>';
 }
 exit;
 ?>
