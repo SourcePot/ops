@@ -20,14 +20,20 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 								 );
 		
 	public function __construct($oc){
-		$this->oc=$oc;
 		$table=str_replace(__NAMESPACE__,'',__CLASS__);
 		$this->entryTable=strtolower(trim($table,'\\'));
+		// get OPS service class
+		require_once 'OpsServices.php';
+		$oc['SourcePot\Ops\OpsServices']=new \SourcePot\Ops\OpsServices($oc);
+		
+		$oc['SourcePot\Ops\OpsServices']->getFamily();
+		
+		$this->oc=$oc;
 	}
 	
 	public function init(array $oc){
-		$this->oc=$oc;
 		$this->entryTemplate=$oc['SourcePot\Datapool\Foundation\Database']->getEntryTemplateCreateTable($this->entryTable,$this->entryTemplate);
+		$this->oc=$oc;
 	}
 	
 	public function getEntryTable():string{return $this->entryTable;}
@@ -221,6 +227,8 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		$arr=array('callingClass'=>$callingClass,'callingFunction'=>$callingFunction,'selector'=>$entry);
 		return $arr;
 	}
+	
+	
 
 }
 ?>

@@ -15,11 +15,17 @@ mb_internal_encoding("UTF-8");
 
 $rootClass='../vendor/sourcepot/datapool/src/php/Root.php';
 if (is_file($rootClass)){
+	// get Datapool Object Collection (oc)
 	require_once $rootClass;
 	$pageObj=new \SourcePot\Datapool\Root();
 	$oc=$pageObj->getOc();
+	// init test environment
+	require_once realpath('./InitTEst.php');
+	$initTestObj=new \SourcePot\Ops\Tests\IniTest($oc);
+	$oc=$initTestObj->getOc();
+	// output result
 	$html='Datapool Object Collection created.<br/>';
-	var_dump($oc['SourcePot\Datapool\Foundation\Backbone']->getSettings());
+	$html.=$oc['SourcePot\Ops\OpsEntries']->dataProcessor();
 	echo $html;
 } else {
 	echo 'Failed to load '.$rootClass.'<br/>';
