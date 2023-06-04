@@ -1,5 +1,5 @@
 # Open Patent Service add-on for Datapool
-##Setting-ip a testpage
+## Setting-up a testpage
 1. Run composer ``composer create-project sourcepot/ops {add your target directory here}`` on your server. This will create among other things the **../www/**-subdirectory, which is the document root and 
 2. Create the database and a database user, e.g. a user and database named "webpage".
 3. Set the database collation to **utf8_unicode_ci**.
