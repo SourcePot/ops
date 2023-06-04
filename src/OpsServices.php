@@ -52,24 +52,61 @@ class OpsServices{
 		return $_SESSION[__CLASS__][__FUNCTION__];
 	}
 	
-	public function getFamily(){
+	public function applicationNumber2application($applicationNumber='US18/301,602',$applicationDate=''){
+		$applicationDate=substr(strtr($applicationDate,array('-'=>'','_'=>'','.'=>'')),0,8);
 		$credentials=$this->getCredentialsToken();
-		$request=array();
+		$request=array('url'=>$this->ops['baseUrl'],'method'=>'GET','data'=>array(),'query'=>array(),'options'=>array());
 		$request['header']=array('Content-Type'=>'application/x-www-form-urlencoded',
 								 'user_app'=>$this->credentials['App Name'],
 								 'Authorization'=>'Bearer '.$credentials['access_token']
 								 );
-		$request['method']='GET';
-		$request['url']=$this->ops['baseUrl'];
-		$request['resource']='rest-services/family/publication/docdb/EP.1000000.A1/biblio,legal';
-		$request['data']=array();
-		$request['query']=array();
-		$request['options']=array();
+		if (empty($applicationDate)){
+			$request['resource']='rest-services/number-service/application/original/('.$applicationNumber.')/docdb';
+		} else {
+			$request['resource']='rest-services/number-service/application/original/('.$applicationNumber.').'.$applicationDate.'/docdb';
+		}
 		$response=$this->oc['SourcePot\Datapool\Tools\NetworkTools']->request($request);
-		//$this->oc['SourcePot\Datapool\Tools\MiscTools']->arr2file($response);
-		return $response;
+		$application=array();
+		// check for error
+		if (isset($response['data']['ops:world-patent-data']['ops:meta'])){
+			$metaStr=json_encode($response['data']['ops:world-patent-data']['ops:meta']);
+			if (strpos($metaStr,'pBRE999')!==FALSE){
+				return $application;
+			}
+		} else {
+			return $application;
+		}
+		// map response to application
+		$oneDimSep=$this->oc['SourcePot\Datapool\Tools\MiscTools']->getSeparator();
+		if (isset($response['data']['ops:world-patent-data']['ops:standardization']['ops:output']['ops:application-reference']['document-id'])){
+			$flatArr=$this->oc['SourcePot\Datapool\Tools\MiscTools']->arr2flat($response['data']['ops:world-patent-data']['ops:standardization']['ops:output']['ops:application-reference']['document-id']);
+			foreach($flatArr as $flatKey=>$flatValue){
+				$flatKey=strtr($flatKey,array('$'=>'','@'=>'',$oneDimSep=>''));
+				$application[$flatKey]=$flatValue;
+				if ($flatKey=='date'){
+					$application['Application date']=$flatValue[0].$flatValue[1].$flatValue[2].$flatValue[3].'-'.$flatValue[4].$flatValue[5].'-'.$flatValue[6].$flatValue[7];
+				}
+			}
+		}
+		return $application;	
 	}
-	
+		
+	public function getApplicationData($type='family',$applicationNumber='US13/486,978',$applicationDate=''){
+		// Argument $type='family' or 'legal' 
+		$application=$this->applicationNumber2application($applicationNumber,$applicationDate);
+		$response=array();
+		if ($application){
+			$credentials=$this->getCredentialsToken();
+			$request=array('url'=>$this->ops['baseUrl'],'method'=>'GET','data'=>array(),'query'=>array(),'options'=>array());
+			$request['header']=array('Content-Type'=>'application/x-www-form-urlencoded',
+									 'user_app'=>$this->credentials['App Name'],
+									 'Authorization'=>'Bearer '.$credentials['access_token']
+									 );
+			$request['resource']='rest-services/'.$type.'/application/'.$application['document-id-type'].'/'.$application['country'].'.'.$application['doc-number'].'.'.$application['kind'];
+			$response=$this->oc['SourcePot\Datapool\Tools\NetworkTools']->request($request);
+		}
+		return $response;	
+	}	
 	
 }
 ?>

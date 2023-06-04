@@ -26,7 +26,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		require_once 'OpsServices.php';
 		$oc['SourcePot\Ops\OpsServices']=new \SourcePot\Ops\OpsServices($oc);
 		
-		$oc['SourcePot\Ops\OpsServices']->getFamily();
+		$oc['SourcePot\Ops\OpsServices']->getApplicationData('biblio','US13/486,978');
 		
 		$this->oc=$oc;
 	}
@@ -112,7 +112,6 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		$arr['wrapperSettings']=array('style'=>array('width'=>'fit-content'));
 		return $arr;
 	}
-
 
 	private function getOpsEntriesSettings($callingElement){
 		$html='';
