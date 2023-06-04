@@ -16,10 +16,9 @@ mb_internal_encoding("UTF-8");
 $rootClass='../../../../src/php/Root.php';
 if (is_file($rootClass)){
 	require_once $rootClass;
-	$pageObj=new \SourcePot\Datapool\Root('../../../../src/www/');
+	$pageObj=new \SourcePot\Datapool\Root();
 	$oc=$pageObj->getOc();
 	$html='Datapool Object Collection created.<br/>';
-	$html.='The file system for testing was created in '.realpath('../').'<br/>';
 	var_dump($oc['SourcePot\Datapool\Foundation\Backbone']->getSettings());
 	echo $html;
 } else {
