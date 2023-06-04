@@ -21,7 +21,7 @@ if (is_file($rootClass)){
 	$oc=$pageObj->getOc();
 	// init test environment
 	require_once realpath('./InitTEst.php');
-	$initTestObj=new \SourcePot\Ops\Tests\IniTest($oc);
+	$initTestObj=new \SourcePot\Ops\Tests\InitTest($oc);
 	$oc=$initTestObj->getOc();
 	// output result
 	$html='Datapool Object Collection created.<br/>';
