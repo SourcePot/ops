@@ -13,7 +13,7 @@ namespace SourcePot\Ops;
 	
 mb_internal_encoding("UTF-8");
 
-$rootClass='../../../../src/php/Root.php';
+$rootClass='../vendor/sourcepot/ops/src/php/Root.php';
 if (is_file($rootClass)){
 	require_once $rootClass;
 	$pageObj=new \SourcePot\Datapool\Root();
