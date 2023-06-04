@@ -38,7 +38,6 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	public function init(array $oc){
 		$this->entryTemplate=$oc['SourcePot\Datapool\Foundation\Database']->getEntryTemplateCreateTable($this->entryTable,$this->entryTemplate);
 		$oc['SourcePot\Datapool\Foundation\Definitions']->addDefintion('!'.__CLASS__,$this->credentialsDef);
-		$this->oc=$oc;
 	}
 	
 	public function getOc(){return $this->oc;}
@@ -137,7 +136,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	
 	public function getOpsEntriesSettingsHtml($arr){
 		if (!isset($arr['html'])){$arr['html']='';}
-		$credentials=$this->oc['SourcePot\Ops\OpsServices']->getCredentials();
+		$credentials=$this->oc['SourcePot\Ops\OpsServices']->getCredentials($this->oc);
 		$arr['html'].=$this->oc['SourcePot\Datapool\Foundation\Definitions']->entry2form($credentials,FALSE);
 		$arr['html'].=$this->opsParams($arr['selector']);
 		$arr['html'].=$this->opsRules($arr['selector']);
@@ -174,10 +173,8 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	private function opsRules($callingElement){
 		$contentStructure=array('Target value or...'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
 								'...value selected by'=>array('htmlBuilderMethod'=>'keySelect','excontainer'=>TRUE,'value'=>'useValue','addSourceValueColumn'=>TRUE,'addColumns'=>array('Linked file'=>'Linked file')),
-								'Target data type'=>array('htmlBuilderMethod'=>'select','excontainer'=>TRUE,'value'=>'string','options'=>$this->dataTypes),
 								'Target column'=>array('htmlBuilderMethod'=>'keySelect','excontainer'=>TRUE,'value'=>'Name','standardColumsOnly'=>TRUE),
 								'Target key'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
-								'Use rule if Compare value'=>array('htmlBuilderMethod'=>'select','excontainer'=>TRUE,'value'=>'always','options'=>$this->skipCondition),
 								'Compare value'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
 								);
 		$contentStructure['...value selected by']+=$callingElement['Content']['Selector'];
