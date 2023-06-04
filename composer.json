@@ -12,7 +12,9 @@
 		}
 	],
 	"require":{
-		"php":">=8.0",
+		"php":">=8.0"
+	},
+	"require-dev":{
 		"sourcepot/datapool":">=v1.0.0"
 	},
 	"autoload":{
