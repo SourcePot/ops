@@ -19,6 +19,13 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 								 'Write'=>array('index'=>FALSE,'type'=>'SMALLINT UNSIGNED','value'=>'ALL_CONTENTADMIN_R','Description'=>'This is the entry specific Read access setting. It is a bit-array.'),
 								 );
 		
+	public $credentialsDef=array('Type'=>array('@tag'=>'p','@default'=>'settings Access','@Read'=>'NO_R'),
+							  'Content'=>array('Consumer Key'=>array('@tag'=>'input','@type'=>'text','@default'=>'','@excontainer'=>TRUE),
+											  'Consumer Secret Key'=>array('@tag'=>'input','@type'=>'password','@default'=>'','@excontainer'=>TRUE),
+											  'Save'=>array('@tag'=>'button','@value'=>'save','@element-content'=>'Save','@default'=>'save'),
+											),
+							);
+
 	public function __construct($oc){
 		$table=str_replace(__NAMESPACE__,'',__CLASS__);
 		$this->entryTable=strtolower(trim($table,'\\'));
@@ -30,6 +37,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	
 	public function init(array $oc){
 		$this->entryTemplate=$oc['SourcePot\Datapool\Foundation\Database']->getEntryTemplateCreateTable($this->entryTable,$this->entryTemplate);
+		$oc['SourcePot\Datapool\Foundation\Definitions']->addDefintion('!'.__CLASS__,$this->credentialsDef);
 		$this->oc=$oc;
 	}
 	
