@@ -11,11 +11,12 @@ The Open Patent Service add-on consists of two classes *SourcePot\Ops\OpsEntries
 If the add-on is installed, the class *SourcePot\Ops\OpsEntries* can be selected as processor within the DataExplorer of Datapool.
 The processor runs on a selected subset of data of a Datapool database table. 
 
+![Processor selector](./assets/ops-processor.png)
 
 In order to connect the add-on with the Open Pantent Service the user credentials of the EPO account need to be added in the DataExplorer.
 To do this, just select a DataExplorer item which uses the *Opsentries processor*.
 
-![Web page screenshot](./assets/ops-credentials.png)
+![User crendentials form](./assets/ops-credentials.png)
 
 ## Setting-up a testpage
 1. Run composer ``composer create-project sourcepot/ops {add your target directory here}`` on your server. This will create among other things the **../www/**-subdirectory, which is the document root and 
