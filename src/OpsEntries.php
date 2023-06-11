@@ -89,7 +89,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	}
 
 	private function getOpsEntriesWidget($callingElement){
-		return $this->oc['SourcePot\Datapool\Foundation\Container']->container('Mapping','generic',$callingElement,array('method'=>'getOpsEntriesWidgetHtml','classWithNamespace'=>__CLASS__),array());
+		return $this->oc['SourcePot\Datapool\Foundation\Container']->container('OPS','generic',$callingElement,array('method'=>'getOpsEntriesWidgetHtml','classWithNamespace'=>__CLASS__),array());
 	}
 	
 	public function getOpsEntriesWidgetHtml($arr){
@@ -111,7 +111,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		$btnArr['value']='Run';
 		$btnArr['key']=array('run');
 		$matrix['Commands']['Run']=$btnArr;
-		$arr['html'].=$this->oc['SourcePot\Datapool\Tools\HTMLbuilder']->table(array('matrix'=>$matrix,'style'=>'clear:left;','hideHeader'=>TRUE,'hideKeys'=>TRUE,'keep-element-content'=>TRUE,'caption'=>'Mapping widget'));
+		$arr['html'].=$this->oc['SourcePot\Datapool\Tools\HTMLbuilder']->table(array('matrix'=>$matrix,'style'=>'clear:left;','hideHeader'=>TRUE,'hideKeys'=>TRUE,'keep-element-content'=>TRUE,'caption'=>'OPS widget'));
 		foreach($result as $caption=>$matrix){
 			$arr['html'].=$this->oc['SourcePot\Datapool\Tools\HTMLbuilder']->table(array('matrix'=>$matrix,'hideHeader'=>FALSE,'hideKeys'=>FALSE,'keep-element-content'=>TRUE,'caption'=>$caption));
 		}
@@ -122,7 +122,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	private function getOpsEntriesSettings($callingElement){
 		$html='';
 		if ($this->oc['SourcePot\Datapool\Foundation\Access']->isContentAdmin()){
-			$html.=$this->oc['SourcePot\Datapool\Foundation\Container']->container('Mapping entries settings','generic',$callingElement,array('method'=>'getOpsEntriesSettingsHtml','classWithNamespace'=>__CLASS__),array());
+			$html.=$this->oc['SourcePot\Datapool\Foundation\Container']->container('OPS entries settings','generic',$callingElement,array('method'=>'getOpsEntriesSettingsHtml','classWithNamespace'=>__CLASS__),array());
 		}
 		return $html;
 	}
@@ -144,10 +144,10 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	}
 
 	private function opsParams($callingElement){
-		$contentStructure=array('Target'=>array('htmlBuilderMethod'=>'canvasElementSelect','excontainer'=>TRUE),
-								'Mode'=>array('htmlBuilderMethod'=>'select','value'=>'entries','excontainer'=>TRUE,'options'=>array('entries'=>'Entries (EntryId will be created from Name)','csv'=>'Create csv','zip'=>'Create zip')),
-								'Run...'=>array('htmlBuilderMethod'=>'select','value'=>0,'excontainer'=>TRUE,'options'=>array(0=>'when triggered',86400=>'once a day',604800=>'once a week',2592000=>'once every 30 days')),
-								'Save'=>array('htmlBuilderMethod'=>'element','tag'=>'button','element-content'=>'&check;','keep-element-content'=>TRUE,'value'=>'string'),
+		$contentStructure=array('Target'=>array('method'=>'canvasElementSelect','excontainer'=>TRUE),
+								'Mode'=>array('method'=>'select','value'=>'entries','excontainer'=>TRUE,'options'=>array('entries'=>'Entries (EntryId will be created from Name)','csv'=>'Create csv','zip'=>'Create zip')),
+								'Run...'=>array('method'=>'select','value'=>0,'excontainer'=>TRUE,'options'=>array(0=>'when triggered',86400=>'once a day',604800=>'once a week',2592000=>'once every 30 days')),
+								'Save'=>array('method'=>'element','tag'=>'button','element-content'=>'&check;','keep-element-content'=>TRUE,'value'=>'string'),
 								);
 		// get selctor
 		$arr=$this->callingElement2arr(__CLASS__,__FUNCTION__,$callingElement,TRUE);
@@ -162,7 +162,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		// get HTML
 		$arr['canvasCallingClass']=$callingElement['Folder'];
 		$arr['contentStructure']=$contentStructure;
-		$arr['caption']='Mapping control: Select ops target and type';
+		$arr['caption']='OPS control: Select ops target and type';
 		$arr['noBtns']=TRUE;
 		$row=$this->oc['SourcePot\Datapool\Tools\HTMLbuilder']->entry2row($arr,FALSE,TRUE);
 		if (empty($arr['selector']['Content'])){$row['setRowStyle']='background-color:#a00;';}
@@ -171,18 +171,18 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 	}
 	
 	private function opsRules($callingElement){
-		$contentStructure=array('Target value or...'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
-								'...value selected by'=>array('htmlBuilderMethod'=>'keySelect','excontainer'=>TRUE,'value'=>'useValue','addSourceValueColumn'=>TRUE,'addColumns'=>array('Linked file'=>'Linked file')),
-								'Target column'=>array('htmlBuilderMethod'=>'keySelect','excontainer'=>TRUE,'value'=>'Name','standardColumsOnly'=>TRUE),
-								'Target key'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
-								'Compare value'=>array('htmlBuilderMethod'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
+		$contentStructure=array('Target value or...'=>array('method'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
+								'...value selected by'=>array('method'=>'keySelect','excontainer'=>TRUE,'value'=>'useValue','addSourceValueColumn'=>TRUE,'addColumns'=>array('Linked file'=>'Linked file')),
+								'Target column'=>array('method'=>'keySelect','excontainer'=>TRUE,'value'=>'Name','standardColumsOnly'=>TRUE),
+								'Target key'=>array('method'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
+								'Compare value'=>array('method'=>'element','tag'=>'input','type'=>'text','excontainer'=>TRUE),
 								);
 		$contentStructure['...value selected by']+=$callingElement['Content']['Selector'];
 		$contentStructure['Target column']+=$callingElement['Content']['Selector'];
 		$arr=$this->callingElement2arr(__CLASS__,__FUNCTION__,$callingElement,FALSE);
 		$arr['canvasCallingClass']=$callingElement['Folder'];
 		$arr['contentStructure']=$contentStructure;
-		$arr['caption']='Mapping rules: Map selected entry values or constants (Source value) to target entry values';
+		$arr['caption']='OPS rules: Map selected entry values or constants (Source value) to target entry values';
 		$html=$this->oc['SourcePot\Datapool\Tools\HTMLbuilder']->entryListEditor($arr);
 		return $html;
 	}
@@ -204,7 +204,7 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
 		}
 		// loop through source entries and parse these entries
 		$this->oc['SourcePot\Datapool\Foundation\Database']->resetStatistic();
-		$result=array('Mapping statistics'=>array('Entries'=>array('value'=>0),
+		$result=array('OPS statistics'=>array('Entries'=>array('value'=>0),
 												  'CSV-Entries'=>array('value'=>0),
 												  'Files added to zip'=>array('value'=>0),
 												  'Skip rows'=>array('value'=>0),
