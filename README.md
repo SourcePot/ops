@@ -11,7 +11,6 @@ The Open Patent Service add-on consists of two classes *SourcePot\Ops\OpsEntries
 If the add-on is installed, the class *SourcePot\Ops\OpsEntries* can be selected as processor within the DataExplorer of Datapool.
 The processor runs on a selected subset of data of a Datapool database table. 
 
-![Web page screenshot](./assets/ops-processor.png)
 
 In order to connect the add-on with the Open Pantent Service the user credentials of the EPO account need to be added in the DataExplorer.
 To do this, just select a DataExplorer item which uses the *Opsentries processor*.
