@@ -23,7 +23,7 @@ class Patents implements \SourcePot\Datapool\Interfaces\App{
 		$this->entryTable=strtolower(trim($table,'\\'));
 	}
 
-	public function init($oc){
+	public function init(array $oc){
 		$this->oc=$oc;
 		$this->entryTemplate=$oc['SourcePot\Datapool\Foundation\Database']->getEntryTemplateCreateTable($this->entryTable,$this->entryTemplate);
 	}
@@ -41,7 +41,7 @@ class Patents implements \SourcePot\Datapool\Interfaces\App{
 		return $this->entryTemplate;
 	}
 
-	public function run($arr=TRUE){
+	public function run(array|bool $arr=TRUE):array{
 		$html='';
 		if ($arr===TRUE){
 			return array('Category'=>'Data','Emoji'=>'&sect;','Label'=>'Patents','Read'=>'ALL_MEMBER_R','Class'=>__CLASS__);
