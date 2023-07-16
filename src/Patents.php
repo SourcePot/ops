@@ -8,9 +8,9 @@
 */
 declare(strict_types=1);
 
-namespace SourcePot\Datapool\DataApps;
+namespace SourcePot\Ops;
 
-class Patents{
+class Patents implements \SourcePot\Datapool\Interfaces\App{
 	
 	private $oc;
 	
