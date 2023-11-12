@@ -84,10 +84,10 @@ class OpsServices{
 		if (isset($response['data']['ops:world-patent-data']['ops:meta'])){
 			$metaStr=json_encode($response['data']['ops:world-patent-data']['ops:meta']);
 			if (strpos($metaStr,'pBRE999')!==FALSE){
-				return $application;
+				return $response['data'];
 			}
-		} else {
-			return $application;
+		} else if (isset($response['data'])){
+			return $response['data'];
 		}
 		// map response to application
 		$oneDimSep=$this->oc['SourcePot\Datapool\Tools\MiscTools']->getSeparator();
@@ -108,7 +108,7 @@ class OpsServices{
 		// Argument $type='family' or 'legal' 
 		$application=$this->applicationNumber2application($applicationNumber,$applicationDate);
 		$response=array();
-		if ($application){
+		if (isset($application['document-id-type'])){
 			$credentials=$this->getCredentialsToken();
 			$request=array('url'=>$this->ops['baseUrl'],'method'=>'GET','data'=>array(),'query'=>array(),'options'=>array());
 			$request['header']=array('Content-Type'=>'application/x-www-form-urlencoded',
@@ -117,9 +117,46 @@ class OpsServices{
 									 );
 			$request['resource']='rest-services/'.$type.'/application/'.$application['document-id-type'].'/'.$application['country'].'.'.$application['doc-number'].'.'.$application['kind'];
 			$response=$this->oc['SourcePot\Datapool\Tools\NetworkTools']->request($request);
-		}
+		} else {
+            $response=$application;
+        }
 		return $response;	
-	}	
-	
+	}
+
+    public function unifyOpsArr($opsArr,$key='ops:family-member',$filterNeedle='publication-reference'){
+        $S=$this->oc['SourcePot\Datapool\Tools\MiscTools']->getSeparator();
+        $SregExp=preg_quote($S,'/');
+        $resultArr=array();
+        $flatOpsArr=$this->oc['SourcePot\Datapool\Tools\MiscTools']->arr2flat($opsArr);
+        foreach($flatOpsArr as $flatKey=>$value){
+            if (stripos($flatKey,$key)===FALSE){continue;}
+            // get keys
+            $flatKey=explode($key,$flatKey);
+            $flatKey=array_pop($flatKey);
+            if (!empty($filterNeedle)){
+                if (stripos($flatKey,$filterNeedle)===FALSE){continue;}
+            }
+            $numberIndexMatchExp='/('.$SregExp.')(\d+)('.$SregExp.')/';
+            preg_match_all($numberIndexMatchExp,$flatKey,$matches);
+            if (isset($matches[2][0])){$keyIndex=intval($matches[2][0]);} else {$keyIndex=FALSE;}
+            if (isset($matches[2][1])){$subKeyIndex=intval($matches[2][1]);} else {$subKeyIndex=FALSE;}
+            $flatKey=preg_replace($numberIndexMatchExp,$S,$flatKey);
+            // value clean-up
+            $flatKey=trim($flatKey,$S.'$');
+            $flatKeyComps=explode($S,$flatKey);
+            $keyName=array_pop($flatKeyComps);
+            $value=trim($value);
+            if ($keyName=='date'){
+                $valueComps=str_split($value,2);
+                if (count($valueComps)===4){
+                   $value=$valueComps[0].$valueComps[1].'-'.$valueComps[2].'-'.$valueComps[3]; 
+                }
+            }
+            $resultArr[$keyIndex.'|'.$subKeyIndex][$keyName]=$value;
+            $resultArr[$keyIndex.'|'.$subKeyIndex]['keyComps']=implode('|',$flatKeyComps);
+        }
+        return $resultArr;
+    }
+    
 }
 ?>
