@@ -258,7 +258,8 @@ class OpsEntries implements \SourcePot\Datapool\Interfaces\Processor{
         foreach($publicationArr as $index=>$publication){
             if (!isset($publication['@document-id-type'])){continue;}
             if (stripos($publication['@document-id-type'],'docdb')===FALSE){continue;}
-            $contentPublication[$publication['country']][$publication['date']]=$publication['country'].' '.$publication['doc-number'].' '.$publication['kind'];
+            $pub=$publication['country'].' '.$publication['doc-number'].' '.$publication['kind'];
+            $contentPublication[$publication['country']][$pub]=$publication['date'];
         }
         // get applications
         $applicationArr=$this->oc['SourcePot\Ops\OpsServices']->unifyOpsArr($opsArr,'ops:family-member','application-reference');
