@@ -1,20 +1,18 @@
 {
-	"name":"sourcepot/ops",
-	"type":"library",
-	"description":"Open Patent Service for Datapool",
-	"keywords":["OPS"],
-	"homepage":"https://datapool.info",
-	"license":"AGPL-3.0-or-later",
-	"authors":[{"name":"Carsten Wallenhauer","email":"admin@datapool.info"}],
-	"require":{
-		"php":">=8.0"
-	},
-	"require-dev":{
-		"sourcepot/datapool":">=v1.0.6"
-	},
-	"autoload":{
-		"psr-4":{
-			"SourcePot\\Ops\\":"src/"
-		}
-	}
+    "name":"sourcepot/ops",
+    "type":"library",
+    "description":"Wrapper Open Patent Services of the European Patent Office",
+    "keywords":["Open Patent Service","Patents"],
+    "homepage":"https://datapool.info",
+    "license":"MIT",
+    "authors":[{"name":"Carsten Wallenhauer","email":"admin@datapool.info"}],
+    "require":{
+        "php":">=8.0",
+        "guzzlehttp/guzzle":"^7.0",
+    },
+    "autoload":{
+        "psr-4":{
+            "SourcePot\\OPS\\":"src\\php"
+        }
+    }
 }
