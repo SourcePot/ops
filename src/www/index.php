@@ -15,11 +15,17 @@ require_once('../../vendor/autoload.php');
 require_once('../php/OpsInterface.php');
 require_once('../php/ops.php');
 
-$appName='Datapool';
-$consumerKey='JGMwlwGdJ9DSRAqTZbVmwWeFGZ43ShUS';
-$consumerSecretKey='uMyyg1EGc0HSrBfA';
+// load or init credentials for OPS access
+$credentialsFile='../credentials.json';
+if (!is_file($credentialsFile)){
+    $credentials=array('appName'=>'...','consumerKey'=>'...','consumerSecretKey'=>'...');
+    $credentialsJson=json_encode($credentials);
+    file_put_contents($credentialsFile,$credentialsJson);
+}
+$credentialsJson=file_get_contents($credentialsFile);
+$credentials=json_decode($credentialsJson,TRUE);
 
-$ops=new ops($appName,$consumerKey,$consumerSecretKey);
+$ops=new ops($credentials['appName'],$credentials['consumerKey'],$credentials['consumerSecretKey']);
 
 var_dump($ops->request('GET','rest-services/number-service/application/original/(EP20163530A)/docdb'));
 //var_dump($ops->request('GET','rest-services/family/application/docdb/EP.20163530.A.20110622/legal'));
