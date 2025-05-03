@@ -36,7 +36,7 @@ class ops implements OpsInterface{
     private function renewAccessToken($uri='/3.2/auth/accesstoken'):array|bool
     {
         $options=array('headers'=>array('Accept'=>'application/json',
-                                        'Content-Type'=>'application/x-www-form-urlencoded',
+                                        'content-type'=>'application/x-www-form-urlencoded',
                                         'user_app'=>$this->appName,
                                         'Authorization'=>'Basic '.base64_encode($this->consumerKey.':'.$this->consumerSecretKey)
                                        ),
@@ -106,7 +106,7 @@ class ops implements OpsInterface{
         }
         if (empty($this->accessToken['error'])){
             $options=array('headers'=>array('Accept'=>'application/json',
-                                            'Content-Type'=>'text/plain',
+                                            'content-type'=>'text/plain',
                                             'user_app'=>$this->appName,
                                             'Authorization'=>'Bearer '.$this->accessToken['access_token']
                                             )
@@ -115,20 +115,21 @@ class ops implements OpsInterface{
             try{
                 $response=$this->client->request($type,'/'.$uri,$options);
                 $headers=$this->header2arr($response->getHeaders());
-                if (isset($headers['Content-Type'])){
-                    if (strpos($headers['Content-Type'],'html')!==FALSE){
+                //var_dump($headers);
+                if (isset($headers['content-type'])){
+                    if (strpos($headers['content-type'],'html')!==FALSE){
                         return array('html'=>$response->getBody()->getContents());
-                    } else if (strpos($headers['Content-Type'],'json')!==FALSE){
+                    } else if (strpos($headers['content-type'],'json')!==FALSE){
                         $response=json_decode($response->getBody()->getContents(),TRUE,512,JSON_INVALID_UTF8_IGNORE);
                         return $this->response2arr($uri,$response);                    
-                    } else if (strpos($headers['Content-Type'],'xml')!==FALSE){
+                    } else if (strpos($headers['content-type'],'xml')!==FALSE){
                         $responseArr=$this->xml2arr($response->getBody()->getContents());
                         return $this->response2arr($uri,$responseArr);                    
                     } else {
-                        return array('error'=>'"Content-Type" '.$headers['Content-Type'].' not yet implemented.');
+                        return array('error'=>'"content-type" '.$headers['content-type'].' not yet implemented.');
                     }
                 } else {
-                    return array('error'=>'Header "Content-Type"');
+                    return array('error'=>'Header "content-type" missing');
                 }
             } catch (\Exception $e){
                 return array('error'=>trim(strip_tags($e->getMessage())));
@@ -153,6 +154,7 @@ class ops implements OpsInterface{
     {
         $arr=array();
         foreach($headers as $key=>$header){
+            $key=strtolower($key);
             foreach($header as $index=>$value){
                 $values=explode(';',$value);
                 foreach($values as $subIndex=>$keyValue){
@@ -174,7 +176,6 @@ class ops implements OpsInterface{
         }
         return $arr;
     }
-
 
     /*  Many thanks to 
     *   http://php.net/manual/en/class.simplexmlelement.php#108867
