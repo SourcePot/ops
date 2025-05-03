@@ -12,6 +12,7 @@ namespace SourcePot\OPS;
 mb_internal_encoding("UTF-8");
 
 $application=$_POST['application']??'EP20163530A';
+$doctype=$_POST['doctype']??'application';
 $type=$_POST['type']??'biblio';
 
 require_once('../../vendor/autoload.php');
@@ -32,8 +33,15 @@ $ops=new ops($credentials['appName'],$credentials['consumerKey'],$credentials['c
 $html='<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta charset="utf-8"><title>OPS</title><link type="text/css" rel="stylesheet" href="index.css"/></head>';
 $html.='<body><form name="892d183ba51083fc2a0b3d4d6453e20b" id="892d183ba51083fc2a0b3d4d6453e20b" method="post" enctype="multipart/form-data">';
 $html.='<h1>Open Patent Service Evaluation Page</h1>';
-$html.='<div class="control"><h2>Please enter a patent or application number</h2>';
+$html.='<div class="control"><h2>Please enter a patent publication or application number</h2>';
 $html.='<input type="text" value="'.$application.'" name="application" id="application" style="margin:0.25em;"/>';
+
+$html.='<select name="doctype" id="doctype">';
+foreach(['application'=>'application','publication'=>'publication'] as $id=>$name){
+    $selected=($id===$doctype)?' selected':'';
+    $html.='<option value="'.$id.'"'.$selected.'>'.$name.'</option>';
+}
+$html.='</select>';
 
 $html.='<select name="type" id="type">';
 foreach(['biblio'=>'biblio','legal'=>'legal'] as $id=>$name){
@@ -50,8 +58,12 @@ require_once('../php/Helper.php');
 
 $helperObj = new Helper();
 
-$nsResult=$ops->request('GET','rest-services/number-service/application/original/('.$application.')/docdb');
+$nsResult=$ops->request('GET','rest-services/number-service/'.$doctype.'/original/('.$application.')/docdb');
 $html.=$helperObj->value2html($nsResult,'Result "Number Service"');
+if ($doctype==='application'){
+    $epMeta=$ops->getEPapplicationMeta($application);
+    $html.=$helperObj->value2html($epMeta,'EP application meta');
+}
 if (isset($nsResult['error'])){
     // Numer service failed
 } else {
@@ -60,7 +72,7 @@ if (isset($nsResult['error'])){
     //var_dump($ops->request('GET','rest-services/family/priority/docdb/US.18314305.A'));
     //var_dump($ops->publishedDataServices());
     //var_dump($ops->publishedDataSearch());
-    $result=$ops->request('GET','rest-services/family/application/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/'.$type);
+    $result=$ops->request('GET','rest-services/family/'.$doctype.'/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/'.$type);
     $html.=$helperObj->value2html($result,'Response "'.ucfirst($type).'"');
 }
 

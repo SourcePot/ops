@@ -33,6 +33,47 @@ class ops implements OpsInterface{
         //var_dump($this->accessToken);
     }
 	
+    public function getEPapplicationMeta($application):array
+    {
+        preg_match('/([a-zA-Z]{0,2})([0-9]+)\.{0,1}([0-9]{0,1})/',$application,$match);
+        if (empty($match[0])){
+            return ['error'=>'Invalid EP application format'];
+        }
+        $meta=['application'=>$match[0],'cc'=>strtoupper($match[1]),'number'=>$match[2],'providedCheckDigit'=>$match[3]];
+        if ($meta['cc']!=='EP' && $meta['cc']!==''){
+            return ['error'=>'Not an EP application'];
+        }
+        preg_match('/\-([0-9]{4})/',$application,$match);
+        $meta['examiningDirectorate']=$match[1]??'';
+        if (strlen($meta['number'])==10){
+            $meta['year']=substr($meta['number'],0,4);
+        } else if (strlen($meta['number'])==8){
+            $meta['year']=substr($meta['number'],0,2);
+            if (intval($meta['year']>76)){
+                $meta['year']='19'.$meta['year'];
+            } else {
+                $meta['year']='20'.$meta['year'];
+            }
+        } else {
+            $meta['error']='Invalid number format';
+            return $meta;
+        }
+        $basenumberArr=str_split(substr($meta['number'],-8));
+        $sumOfDigits=0;
+        for($i=count($basenumberArr)-1;$i>=0;$i--){
+            $multiplier=(($multiplier??1)==1)?2:1;
+            $multResArr=str_split(strval(intval($basenumberArr[$i])*$multiplier));
+            foreach($multResArr as $multRes){
+                $sumOfDigits+=$multRes;
+            }
+        }
+        $meta['checkDigit']=10-$sumOfDigits%10;
+        if ($meta['providedCheckDigit']!=='' && intval($meta['providedCheckDigit'])!=$meta['checkDigit']){
+            $meta['warning']='Invalid provided check digit';
+        }
+        return $meta;
+    }
+
     private function renewAccessToken($uri='/3.2/auth/accesstoken'):array|bool
     {
         $options=array('headers'=>array('Accept'=>'application/json',
