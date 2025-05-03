@@ -8,8 +8,22 @@ Link to EPO OPS web page:  https://www.epo.org/en/searching-for-patents/data/web
 ## Sample code
 
 ```
-// create an ops object using the login credentials
-$ops=new ops($credentials['appName'],$credentials['consumerKey'],$credentials['consumerSecretKey']);
+namespace SourcePot\OPS;
+	
+mb_internal_encoding("UTF-8");
+
+require_once('../../vendor/autoload.php');
+
+// create the ops object using the login credentials
+$ops=new ops($appName,$consumerKey,$consumerSecretKey);
+
+// number service request 
+$nsResult=$ops->request('GET','rest-services/number-service/application/original/(EP20163530A)/docdb');
+
+// family service, get biliographic data
+$result=$ops->request('GET','rest-services/family/application/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/biblio');
+
+var_dump($result);
 ```
 
 ## Evaluation Web Page
