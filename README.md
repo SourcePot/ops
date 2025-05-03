@@ -1,4 +1,4 @@
-# Brifge to the Open Patent Service
+# Bridge to the Open Patent Service
 
 The Open Patent Services (OPS) class and interface can be installed on a server by running: `composer create-project sourcepot/ops {add your target directory here}`
 OPS is a web service which provides access to the European Patent Office's data. You need to have a user account with the European Patent Office to access the data. 
