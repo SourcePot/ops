@@ -18,12 +18,12 @@ require_once('../../vendor/autoload.php');
 $ops=new ops($appName,$consumerKey,$consumerSecretKey);
 
 // number service request 
-$nsResult=$ops->request('GET','rest-services/number-service/application/original/(EP20163530A)/docdb');
+$nService=$ops->request('GET','rest-services/number-service/application/original/(EP20163530A)/docdb');
 
 // family service, get biliographic data
-$result=$ops->request('GET','rest-services/family/application/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/biblio');
+$biblio=$ops->request('GET','rest-services/family/application/docdb/'.$nService['country'].'.'.$nService['doc-number'].'.'.$nService['kind'].'.'.$nService['date'].'/biblio');
 
-var_dump($result);
+var_dump($biblio);
 ```
 
 ## Evaluation Web Page
