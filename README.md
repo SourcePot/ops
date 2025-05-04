@@ -5,7 +5,7 @@ For details see: [EPO OPS web page](https://www.epo.org/en/searching-for-patents
 
 This API consists of a PHP class and an interface as well as helper files. For evaluation purposes this respository can be installed as a "stand-alone" web application on your server by running: `composer create-project sourcepot/ops {add your target directory here}` This allows you to run the evaluation web page.
 
-Alternatively, you can add this respository to your project by adding `..."sourcepot/ops":">=v..."... ` to the list of required external components to your projects `composer.json` file.
+Alternatively, you can add this respository to your project by adding `..."sourcepot/ops":">=v..."... ` to the list of required external components to your project´s `composer.json` file.
 
 ## Sample code
 
