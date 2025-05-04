@@ -1,9 +1,11 @@
-# PHP class for Open Patent Service requests
+# PHP API for the Open Patent Service
 
-The Open Patent Services (OPS) class and interface can be installed on a server by running: `composer create-project sourcepot/ops {add your target directory here}`
-OPS is a web service which provides access to the European Patent Office's data. You need to have a user account with the European Patent Office to access the data. 
+OPS is a web service which provides access to the European Patent Office's data. You need to have an user account with the European Patent Office to access the service. 
+See EPO OPS web page for details:  https://www.epo.org/en/searching-for-patents/data/web-services/ops
 
-EPO OPS web page:  https://www.epo.org/en/searching-for-patents/data/web-services/ops
+This API consists of a PHP class and an interface as well as helper files. For evaluation purposes this respository can be installed as a "stand-alone" web application on your server by running: `composer create-project sourcepot/ops {add your target directory here}` This allows you to run the evaluation web page.
+
+Alternatively, you can add this respository to your project by adding `..."sourcepot/ops":">=v..."... ` to the list of required external components to your projects `composer.json` file.
 
 ## Sample code
 
