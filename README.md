@@ -1,7 +1,7 @@
 # PHP API for the Open Patent Service
 
 OPS is a web service which provides access to the European Patent Office's data. You need to have an user account with the European Patent Office to access the service. 
-For details see: [EPO OPS web page](https://www.epo.org/en/searching-for-patents/data/web-services/ops 'Link to the EPA web page'){:target="_blank"}
+For details see: [EPO OPS web page](https://www.epo.org/en/searching-for-patents/data/web-services/ops 'Link to the EPA web page')
 
 This API consists of a PHP class and an interface as well as helper files. For evaluation purposes this respository can be installed as a "stand-alone" web application on your server by running: `composer create-project sourcepot/ops {add your target directory here}` This allows you to run the evaluation web page.
 
