@@ -1,6 +1,6 @@
 <?php
 /*
-* @package Match
+* @package OPS
 * @author Carsten Wallenhauer <admin@datapool.info>
 * @copyright 2024 to today Carsten Wallenhauer
 * @license https://opensource.org/license/mit MIT

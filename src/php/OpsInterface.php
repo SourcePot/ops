@@ -1,7 +1,7 @@
 <?php
 /*
-* This file is part of the Datapool CMS package.
-* @package Datapool
+* This file is part of the OPS package.
+* @package OPS
 * @author Carsten Wallenhauer <admin@datapool.info>
 * @copyright 2023 to today Carsten Wallenhauer
 * @license https://opensource.org/license/mit/ MIT
