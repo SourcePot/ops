@@ -17,17 +17,15 @@ $type=$_POST['type']??'biblio';
 
 require_once('../../vendor/autoload.php');
 
-// load or init credentials for OPS access
+// load or initialize credentials for OPS access
 $credentialsFile='../credentials.json';
 if (!is_file($credentialsFile)){
-    $credentials=array('appName'=>'...','consumerKey'=>'...','consumerSecretKey'=>'...');
+    $credentials=['appName'=>'...','consumerKey'=>'...','consumerSecretKey'=>'...'];
     $credentialsJson=json_encode($credentials);
     file_put_contents($credentialsFile,$credentialsJson);
 }
 $credentialsJson=file_get_contents($credentialsFile);
 $credentials=json_decode($credentialsJson,TRUE);
-
-$ops=new ops($credentials['appName'],$credentials['consumerKey'],$credentials['consumerSecretKey']);
 
 // compile html
 $html='<!DOCTYPE html><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta charset="utf-8"><title>OPS</title><link type="text/css" rel="stylesheet" href="index.css"/></head>';
@@ -44,7 +42,7 @@ foreach(['application'=>'application','publication'=>'publication'] as $id=>$nam
 $html.='</select>';
 
 $html.='<select name="type" id="type">';
-foreach(['biblio'=>'biblio','legal'=>'legal'] as $id=>$name){
+foreach(['biblio'=>'biblio','legal'=>'legal','Biblio / legal'=>'Biblio / legal'] as $id=>$name){
     $selected=($id===$type)?' selected':'';
     $html.='<option value="'.$id.'"'.$selected.'>'.$name.'</option>';
 }
@@ -58,24 +56,27 @@ require_once('../php/Helper.php');
 
 $helperObj = new Helper();
 
-$nsResult=$ops->request('GET','rest-services/number-service/'.$doctype.'/original/('.$application.')/docdb');
-$html.=$helperObj->value2html($nsResult,'Result "Number Service"');
-if ($doctype==='application'){
-    $epMeta=$ops->getEPapplicationMeta($application);
-    $html.=$helperObj->value2html($epMeta,'EP application meta');
-}
-if (isset($nsResult['error'])){
-    // Numer service failed
+if ($type==='Biblio / legal'){
+    $biblio=new biblio($credentials['appName'],$credentials['consumerKey'],$credentials['consumerSecretKey']);
+    $result=$biblio->legal($application);
+    $html.=$helperObj->value2html($result,$type.' response');
 } else {
-    //var_dump($ops->request('GET','rest-services/family/application/docdb/EP.20163530.A.20110622/legal'));
-    //var_dump($ops->request('GET','rest-services/register/application/epodoc/EP20163530'));
-    //var_dump($ops->request('GET','rest-services/family/priority/docdb/US.18314305.A'));
-    //var_dump($ops->publishedDataServices());
-    //var_dump($ops->publishedDataSearch());
-    $result=$ops->request('GET','rest-services/family/'.$doctype.'/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/'.$type);
-    $html.=$helperObj->value2html($result,'Response "'.ucfirst($type).'"');
+    $ops=new ops($credentials['appName'],$credentials['consumerKey'],$credentials['consumerSecretKey']);
+    $nsResult=$ops->request('GET','rest-services/number-service/'.$doctype.'/original/('.$application.')/docdb');
+    $html.=$helperObj->value2html($nsResult,'Result "Number Service"');
+    if ($doctype==='application'){
+        $epMeta=$ops->getEPapplicationMeta($application);
+        $html.=$helperObj->value2html($epMeta,'EP application meta');
+    }
+    if (empty($nsResult['error'])){
+        // Number service OK
+        $result=$ops->request('GET','rest-services/family/'.$doctype.'/docdb/'.$nsResult['country'].'.'.$nsResult['doc-number'].'.'.$nsResult['kind'].'.'.$nsResult['date'].'/'.$type);
+        $html.=$helperObj->value2html($result,'Response "'.ucfirst($type).'"');
+    } else {
+        // Number service failed
+        $html.=$helperObj->value2html($nsResult,'Error');
+    }
 }
-
 $html.='<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.3/jquery.min.js"></script>';
 $html.='<script src="index.js"></script>';
 $html.='</body></html>';

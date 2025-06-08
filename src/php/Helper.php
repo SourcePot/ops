@@ -12,8 +12,8 @@ namespace SourcePot\OPS;
 
 final class Helper{
 
-    const ONEDIMSEPARATOR='|[]|';
-
+    public const ONEDIMSEPARATOR='|[]|';
+    
     function __construct()
     {
         

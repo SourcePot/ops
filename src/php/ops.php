@@ -17,20 +17,18 @@ use GuzzleHttp\Stream\Stream;
 
 class ops implements OpsInterface{
 
-    private $opsUrl='https://ops.epo.org';
+    const OPS_URL='https://ops.epo.org';
     
-    const ONEDIMSEPARATOR='|[]|';
-    
-    private $client=FALSE;
+    private $client=NULL;
+    private $helperObj=NULL;
 
-    private $accessToken=array();
+    private $accessToken=[];
     
     public function __construct(private string $appName,private string $consumerKey,private string $consumerSecretKey)
     {
-        $this->client = new \GuzzleHttp\Client(['base_uri'=>$this->opsUrl]);
+        $this->helperObj= new Helper();
+        $this->client = new \GuzzleHttp\Client(['base_uri'=>self::OPS_URL]);
         $this->renewAccessToken();
-        //var_dump(self::CODES);
-        //var_dump($this->accessToken);
     }
 	
     public function getEPapplicationMeta($application):array
@@ -76,19 +74,19 @@ class ops implements OpsInterface{
 
     private function renewAccessToken($uri='/3.2/auth/accesstoken'):array|bool
     {
-        $options=array('headers'=>array('Accept'=>'application/json',
-                                        'content-type'=>'application/x-www-form-urlencoded',
-                                        'user_app'=>$this->appName,
-                                        'Authorization'=>'Basic '.base64_encode($this->consumerKey.':'.$this->consumerSecretKey)
-                                       ),
-                       'form_params'=>array('grant_type'=>'client_credentials')
-                       );
+        $options=['headers'=>['Accept'=>'application/json',
+                            'content-type'=>'application/x-www-form-urlencoded',
+                            'user_app'=>$this->appName,
+                            'Authorization'=>'Basic '.base64_encode($this->consumerKey.':'.$this->consumerSecretKey)
+                            ],
+                'form_params'=>['grant_type'=>'client_credentials']
+                ];
         try{
             $response=$this->client->request('POST',$uri,$options);
             $accessToken=json_decode($response->getBody()->getContents(),TRUE);
-            $this->accessToken=($accessToken)?$accessToken:array('error'=>'Problem decoding json-response');
+            $this->accessToken=($accessToken)?$accessToken:['error'=>'Problem decoding json-response'];
         } catch (\Exception $e){
-            $this->accessToken=array('error'=>trim(strip_tags($e->getMessage())));
+            $this->accessToken=['error'=>trim(strip_tags($e->getMessage()))];
         }
         $this->accessToken['timestamp']=time();
         return $this->accessToken;
@@ -103,15 +101,15 @@ class ops implements OpsInterface{
         return FALSE;
     }
 
-    public function publishedDataSearch(array $query=array('pa'=>'Wallenhauer')):array
+    public function publishedDataSearch(array $query=['pa'=>'Wallenhauer']):array
     {
-        $response=$this->request('POST','rest-services/biblio/search',array('headers'=>array('Accept'=>'application/register+xml'),'body'=>'q=pa%3DWallenhauer'));
+        $response=$this->request('POST','rest-services/biblio/search',['headers'=>['Accept'=>'application/register+xml'],'body'=>'q=pa%3DWallenhauer']);
         return $response;
     }
     
-    public function publishedDataServices(string $referenceType='publication',string $inputFormat='epodoc',string $endpoint='images',string $input='EP1000000.A1',array $query=array()):array
+    public function publishedDataServices(string $referenceType='publication',string $inputFormat='epodoc',string $endpoint='images',string $input='EP1000000.A1',array $query=[]):array
     {
-        $response=$this->request('POST','rest-services/published-data/'.$referenceType.'/'.$inputFormat.'/'.$endpoint,array('body'=>$input,'query'=>$query));
+        $response=$this->request('POST','rest-services/published-data/'.$referenceType.'/'.$inputFormat.'/'.$endpoint,['body'=>$input,'query'=>$query]);
         return $response;
     }
     
@@ -140,18 +138,18 @@ class ops implements OpsInterface{
         
     }
 
-    public function request(string $type='GET',string $uri='rest-services/number-service/application/original/(CA2887009)/docdb',$arr=array()):array|bool
+    public function request(string $type='GET',string $uri='rest-services/number-service/application/original/(CA2887009)/docdb',$arr=[]):array|bool
     {
         if (!$this->isValidAccessToken()){
             $this->renewAccessToken();
         }
         if (empty($this->accessToken['error'])){
-            $options=array('headers'=>array('Accept'=>'application/json',
-                                            'content-type'=>'text/plain',
-                                            'user_app'=>$this->appName,
-                                            'Authorization'=>'Bearer '.$this->accessToken['access_token']
-                                            )
-                          );
+            $options=['headers'=>['Accept'=>'application/json',
+                                'content-type'=>'text/plain',
+                                'user_app'=>$this->appName,
+                                'Authorization'=>'Bearer '.$this->accessToken['access_token']
+                                ]
+                    ];
             $options=array_replace_recursive($options,$arr);
             try{
                 $response=$this->client->request($type,'/'.$uri,$options);
@@ -159,7 +157,7 @@ class ops implements OpsInterface{
                 //var_dump($headers);
                 if (isset($headers['content-type'])){
                     if (strpos($headers['content-type'],'html')!==FALSE){
-                        return array('html'=>$response->getBody()->getContents());
+                        return ['html'=>$response->getBody()->getContents()];
                     } else if (strpos($headers['content-type'],'json')!==FALSE){
                         $response=json_decode($response->getBody()->getContents(),TRUE,512,JSON_INVALID_UTF8_IGNORE);
                         return $this->response2arr($uri,$response);                    
@@ -167,33 +165,33 @@ class ops implements OpsInterface{
                         $responseArr=$this->xml2arr($response->getBody()->getContents());
                         return $this->response2arr($uri,$responseArr);                    
                     } else {
-                        return array('error'=>'"content-type" '.$headers['content-type'].' not yet implemented.');
+                        return ['error'=>'"content-type" '.$headers['content-type'].' not yet implemented.'];
                     }
                 } else {
-                    return array('error'=>'Header "content-type" missing');
+                    return ['error'=>'Header "content-type" missing'];
                 }
             } catch (\Exception $e){
-                return array('error'=>trim(strip_tags($e->getMessage())));
+                return ['error'=>trim(strip_tags($e->getMessage()))];
             }
         } else {
-            return array('error'=>$this->accessToken['error']);
+            return ['error'=>$this->accessToken['error']];
         }
     }
 
     private function response2arr($uri,$response):array
     {
         if (is_array($response)){
-            $response=$this->arr2flat($response);
+            $response=$this->helperObj->arr2flat($response);
             $response=$this->unifyOutput($uri,$response);
         } else {
-            $response=array('error'=>'Data format error');
+            $response=['error'=>'Data format error'];
         }
         return $response;
     }
     
     private function header2arr(array $headers):array
     {
-        $arr=array();
+        $arr=[];
         foreach($headers as $key=>$header){
             $key=strtolower($key);
             foreach($header as $index=>$value){
@@ -205,7 +203,7 @@ class ops implements OpsInterface{
                     } else {
                         if (isset($arr[$key])){
                             if (!is_array($arr[$key])){
-                                $arr[$key]=array(0=>$arr[$key]);
+                                $arr[$key]=[0=>$arr[$key]];
                             }
                             $arr[$key][]=$keyValue;
                         } else {
@@ -247,47 +245,22 @@ class ops implements OpsInterface{
     
     private function xml2arr(string $xml):array|bool
     {
-        $arr=array('xml'=>$xml);
+        $arr=['xml'=>$xml];
         if (extension_loaded('SimpleXML')){
             $this->normalize_xml2array(simplexml_load_string($xml,'SimpleXMLElement',LIBXML_NOCDATA),$result);
             $json=json_encode($result);
-            return array('ops:world-patent-data'=>json_decode($json,TRUE));
+            return ['ops:world-patent-data'=>json_decode($json,TRUE)];
         } else {
             throw new \ErrorException('Function '.__FUNCTION__.': PHP extension SimpleXML missing.',0,E_ERROR,__FILE__,__LINE__);
             return FALSE;
         }
     }
-
-    /**
-    * @return arr This method converts an array to the corresponding flat array.
-    */
-    private function arr2flat(array $arr,string $S=self::ONEDIMSEPARATOR):array
-    {
-        if (!is_array($arr)){return $arr;}
-        $flat=array();
-        $this->arr2flatHelper($arr,$flat,'',$S);
-        return $flat;
-    }
-    
-    private function arr2flatHelper($arr,&$flat,$oldKey='',string $S=self::ONEDIMSEPARATOR)
-    {
-        $result=array();
-        foreach ($arr as $key=>$value){
-            if (strlen(strval($oldKey))===0){$newKey=$key;} else {$newKey=$oldKey.$S.$key;}
-            if (is_array($value)){
-                $result[$newKey]=$this->arr2flatHelper($value,$flat,$newKey,$S); 
-            } else {
-                $result[$newKey]=$value;
-                $flat[$newKey]=$value;
-            }
-        }
-        return $result;
-    }
     
     private function key2subkey($key):string
     {
         if (!is_array($key)){
-            $key=explode(self::ONEDIMSEPARATOR,$key);
+            $helperObj= new Helper();
+            $key=explode($this->helperObj::ONEDIMSEPARATOR,$key);
         }
         $subKey=array_pop($key);
         if ($subKey=='$'){$subKey=array_pop($key);}
@@ -297,7 +270,7 @@ class ops implements OpsInterface{
     private function unifyOutput($uri,$flatArr):array
     {
         $uriComps=explode('/',$uri);
-        $returnFlatArr=array('service'=>$uriComps[1]);
+        $returnFlatArr=['service'=>$uriComps[1]];
         foreach($flatArr as $key=>$value){
             $value=trim(strval($value));
             // replace warning/error codes
@@ -313,14 +286,14 @@ class ops implements OpsInterface{
             // compile values
             switch ($returnFlatArr['service']){
                 case 'number-service':
-                    $keyComps=explode(self::ONEDIMSEPARATOR,$key);
+                    $keyComps=explode($this->helperObj::ONEDIMSEPARATOR,$key);
                     if ($keyComps[2]=='ops:output'){
                         $subKey=$this->key2subkey($keyComps);
                         $returnFlatArr[$subKey]=$value;
                     }
                     break;
                 case 'family':
-                    $keyComps=explode(self::ONEDIMSEPARATOR,$key);
+                    $keyComps=explode($this->helperObj::ONEDIMSEPARATOR,$key);
                     $memberIndex=(isset($keyComps[3]))?intval($keyComps[3]):0;
                     if ($keyComps[2]=='ops:family-member' && $keyComps[4]=='ops:legal' && isset($keyComps[4])){
                         $eventIndex=intval($keyComps[5]);
@@ -329,10 +302,10 @@ class ops implements OpsInterface{
                     } else if (strpos($key,'@total-result-count')!==FALSE){
                         $returnFlatArr['total-result-count']=$value;
                     } else if ((strpos($key,'document-id')!==FALSE || strpos($key,'priority-active-indicator')!==FALSE) && 
-                               (strpos($key,self::ONEDIMSEPARATOR.'publication-reference')!==FALSE || strpos($key,self::ONEDIMSEPARATOR.'application-reference')!==FALSE || strpos($key,self::ONEDIMSEPARATOR.'priority-claim'))){
+                               (strpos($key,$this->helperObj::ONEDIMSEPARATOR.'publication-reference')!==FALSE || strpos($key,$this->helperObj::ONEDIMSEPARATOR.'application-reference')!==FALSE || strpos($key,$this->helperObj::ONEDIMSEPARATOR.'priority-claim'))){
                         $docType=$keyComps[4];
                         $docKey=$keyComps[5];
-                        $comps=explode($docType.self::ONEDIMSEPARATOR.$docKey.self::ONEDIMSEPARATOR,$key);
+                        $comps=explode($docType.$this->helperObj::ONEDIMSEPARATOR.$docKey.$this->helperObj::ONEDIMSEPARATOR,$key);
                         $subKey=$this->key2subkey($comps[1]);
                         if ($subKey=='document-id-type'){$documentIdType=$value;}
                         if (!isset($documentIdType)){$documentIdType='?';}
