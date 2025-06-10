@@ -22,7 +22,7 @@ $ops=new ops($appName,$consumerKey,$consumerSecretKey);
 // number service request 
 $nService=$ops->request('GET','rest-services/number-service/application/original/(EP20163530A)/docdb');
 
-// family service, get biliographic data
+// family service, get bibliographic data
 $biblio=$ops->request('GET','rest-services/family/application/docdb/'.$nService['country'].'.'.$nService['doc-number'].'.'.$nService['kind'].'.'.$nService['date'].'/biblio');
 
 var_dump($biblio);
