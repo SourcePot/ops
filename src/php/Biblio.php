@@ -25,7 +25,7 @@ final class Biblio{
 
     public function legal(string $application):array
     {
-        $result=['warnings'=>[],'errors'=>[],];
+        $result=['warnings'=>[],];
         // check provided application with number service
         $doctype='application';
         $result=$this->opsObj->request('GET','rest-services/number-service/application/original/('.$application.')/docdb');

@@ -72,7 +72,7 @@ class ops implements OpsInterface{
         return $meta;
     }
 
-    private function renewAccessToken($uri='/3.2/auth/accesstoken'):array|bool
+    public function renewAccessToken($uri='/3.2/auth/accesstoken'):array|bool
     {
         $options=['headers'=>['Accept'=>'application/json',
                             'content-type'=>'application/x-www-form-urlencoded',
