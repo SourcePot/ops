@@ -15,12 +15,10 @@ final class Biblio{
     const ONEDIMSEPARATOR='|[]|';
 
     private $opsObj=NULL;
-    private $helperObj=NULL;
-
+    
     public function __construct(private string $appName,private string $consumerKey,private string $consumerSecretKey)
     {
         $this->opsObj = new ops($appName,$consumerKey,$consumerSecretKey);
-        $this->helperObj = new helper();
     }
 
     public function legal(string $application):array
